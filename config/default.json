@@ -1,0 +1,7 @@
+{
+    "App" : "First NestJS Application",
+    "JWT_SECRECT" : "SHOP_ADMIN",
+    "DB" : {
+        "name" : "test"
+    }
+}

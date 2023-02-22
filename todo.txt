@@ -1,0 +1,10 @@
+1. login后再请求login 显示已成功 ok
+2. 注册用户 + md5密码 ok
+3. 登录md5密码 ok
+4. 日志 ok + 参数校验 login & register
+4.1 azure login
+5. 全局异常处理
+6. 权限
+7. 全局json返回处理
+8. refresh token
+9. 前端
