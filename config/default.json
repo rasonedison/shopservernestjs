@@ -1,7 +1,9 @@
 {
     "App" : "First NestJS Application",
     "JWT_SECRECT" : "SHOP_ADMIN",
+    "JWT_TIMEOUT" : "600s",
     "DB" : {
         "name" : "test"
-    }
+    },
+    "AZUREStrategy": "azuread"
 }
