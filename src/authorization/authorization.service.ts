@@ -1,9 +1,8 @@
 import { HttpService } from '@nestjs/axios';
-import { HttpException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { AxiosResponse } from 'axios';
-import { response } from 'express';
 import { lastValueFrom, map } from 'rxjs';
+import { LogService } from 'src/Log/custom.log';
 import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 import { configUtil } from 'src/util/config.util';
@@ -14,13 +13,14 @@ export class AuthorizationService {
     private userService: UserService,
     private jwtService: JwtService,
     private httpService: HttpService,
+    private logService: LogService
   ) {}
 
   async validateUser(username: string, password: string): Promise<User> {
     const user = await this.userService.findOneWithPassword(username, password);
     if (!user) {
-      console.log("username, password is wrong")
-      throw new UnauthorizedException();
+      this.logService.info("login controller:Username or Password is wrong! ")
+      throw new UnauthorizedException("Username or Password is wrong!");
     }
     // const isPasswordValid = true; // 应该改为先查用户存在，在对比密码
     // if (!isPasswordValid) {
@@ -29,15 +29,15 @@ export class AuthorizationService {
     return user;
   }
 
-  async generateJWT(user: any) {
-    const payload = { ...user, sub: 123 }; // 这里需要添加role & permisson
+  async generateJWT(user: User):Promise<{[ access_token : string ]: string }> {
+    const payload = { ...user, sub: "shoppy" }; // 这里需要添加role & permisson
     //console.log(payload);
     return {
       access_token: this.jwtService.sign(payload),
     };
   }
 
-  async getAzureLoginToken (_code: string) {
+  async getAzureLoginToken (_code: string): Promise<string> {
     const data = {
       client_id: configUtil.getAzureADConfig('clientID') , 
       redirect_uri: configUtil.getAzureADConfig('redirectUrl'),
@@ -59,7 +59,7 @@ export class AuthorizationService {
     //return res.access_token;
   }
 
-  async getAzureUserInfo (_access_token: string){
+  async getAzureUserInfo (_access_token: string) :Promise<string>{
     try {
       const res = await lastValueFrom(
         this.httpService

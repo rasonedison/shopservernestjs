@@ -9,7 +9,6 @@ import { OrderModule } from './order/order.module';
 import { AssetsModule } from './assets/assets.module';
 import { configUtil } from './util/config.util';
 import { LogService } from './Log/custom.log';
-import { REQUEST } from '@nestjs/core';
 
 //console.log(configUtil.getAzureADConfig())
 

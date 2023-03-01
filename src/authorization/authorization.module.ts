@@ -12,19 +12,17 @@ import { JwtAuthGuard } from './jwt.auth.guard';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { IsLoginedInterceptor } from 'src/interceptor/check-login.interceptor';
 import { configUtil } from 'src/util/config.util';
-import { LogService } from 'src/Log/custom.log';
-import { AzureADState } from 'src/middleware/azure.ad.state';
 import { HttpModule } from '@nestjs/axios';
 
 
 @Module({
   imports: [
     PassportModule.register({
-      defaultStrategy: 'azuread',
+      defaultStrategy: configUtil.getAzureStrategy(),
     }),
     JwtModule.register({
       secret: configUtil.getJWTSecrect(),
-      signOptions: { expiresIn: '600s' },
+      signOptions: { expiresIn: configUtil.getJWTTimoutConfig() },
     }),
     HttpModule,
     MongooseModule.forFeature([{ name: User.name, schema: UsersSchema }]),
@@ -42,9 +40,10 @@ import { HttpModule } from '@nestjs/axios';
   exports: [AuthorizationService, JwtAuthGuard, AzureADStrategy],
 })
 export class AuthorizationModule {
-  configure(consumer) {
-    consumer
-      .apply(AzureADState)
-      .forRoutes('/auth/azurelogin');
-  }
+  //注册中间件
+  // configure(consumer) {
+  //   consumer
+  //     .apply(AzureADState)
+  //     .forRoutes('/auth/azurelogin');
+  // }
 }

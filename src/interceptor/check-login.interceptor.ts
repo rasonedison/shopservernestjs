@@ -27,16 +27,6 @@ export class IsLoginedInterceptor implements NestInterceptor {
         try {
             const user = this.jwtService.verify(jwtToken);
             request.access_token = jwtToken;
-            //const response = context.switchToHttp().getResponse();
-            // 直接返回数据给客户端
-            // response.status(200).json({ 
-            //     statusCode: HttpStatus.FOUND,
-            //     message: 'you already logined',
-            //     data: {
-            //             access_token: jwtToken,
-            //             user : user
-            //             }
-            //         });
             // 阻止请求进入控制器处理
             //return new Observable();
           } catch (error) {

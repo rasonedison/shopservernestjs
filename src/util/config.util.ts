@@ -32,5 +32,13 @@ export class configUtil {
     return config.get('azure.'+key);
   }
 
+  static getJWTTimoutConfig():string{
+    return config.get('JWT_TIMEOUT');
+  }
+
+  static getAzureStrategy():string{
+    return config.get('AZUREStrategy');
+  }
+
 
 }

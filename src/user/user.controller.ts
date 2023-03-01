@@ -6,6 +6,8 @@ import {
   Patch,
   Param,
   Delete,
+  UnauthorizedException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -26,6 +28,7 @@ export class UserController {
 
   @Get()
   findOne() {
+    throw new InternalServerErrorException("not login")
     //this.logService.info();
    // this.logger.log('123');
   }

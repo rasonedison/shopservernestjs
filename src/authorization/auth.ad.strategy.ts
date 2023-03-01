@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy, AuthGuard } from '@nestjs/passport';
-import { BearerStrategy, OIDCStrategy, } from 'passport-azure-ad';
-import { UserService } from '../user/user.service';
+import { OIDCStrategy, } from 'passport-azure-ad';
 import { configUtil } from 'src/util/config.util';
 
 @Injectable()

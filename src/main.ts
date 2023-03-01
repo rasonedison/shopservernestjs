@@ -5,6 +5,7 @@ import * as winston from 'winston';
 import { AppModule } from './app.module';
 import { LogUtil } from './util/log.config.util'
 import * as cookieParser from 'cookie-parser';
+import { AllExceptionsFilter } from './filter/all.exception.filter';
 
 async function bootstrap() {
 
@@ -18,5 +19,7 @@ async function bootstrap() {
   await app.listen(80);
   app.useGlobalPipes(new ValidationPipe());
   app.use(cookieParser());
+  app.useGlobalFilters(new AllExceptionsFilter());
+
 }
 bootstrap();

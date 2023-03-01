@@ -13,7 +13,7 @@ export class UserService {
   ) {}
 
   async findOneWithPassword(_username: string, _password: string): Promise<User> {
-    return this.userModel.findOne({ username: _username, password: _password }).exec();
+    return this.userModel.findOne({ username: _username, password: _password, azureid:"application" }).exec();
   }
 
   async findOne(_username: string ): Promise<User> {
