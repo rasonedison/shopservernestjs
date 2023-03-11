@@ -13,6 +13,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { IsLoginedInterceptor } from 'src/interceptor/check-login.interceptor';
 import { configUtil } from 'src/util/config.util';
 import { HttpModule } from '@nestjs/axios';
+import { Role, RolesSchema } from 'src/user/entities/role.entity';
 
 
 @Module({
@@ -25,7 +26,10 @@ import { HttpModule } from '@nestjs/axios';
       signOptions: { expiresIn: configUtil.getJWTTimoutConfig() },
     }),
     HttpModule,
-    MongooseModule.forFeature([{ name: User.name, schema: UsersSchema }]),
+    MongooseModule.forFeature([
+      { name: User.name, schema: UsersSchema },
+      { name: Role.name, schema: RolesSchema },
+    ]),
   ],
   controllers: [AuthorizationController],
   providers: [AuthorizationService, 

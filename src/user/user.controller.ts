@@ -12,6 +12,9 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LogService } from 'src/Log/custom.log';
+import { Role, RolesSchema } from './entities/role.entity';
+import { User } from './entities/user.entity';
+import { use } from 'passport';
 
 @Controller('user')
 export class UserController {
@@ -27,11 +30,39 @@ export class UserController {
   }
 
   @Get()
-  findOne() {
-    throw new InternalServerErrorException("not login")
+  async findOne() {
+    const user:User = await this.userService.findOne("rasonsze@gmail.com");
+    // throw new InternalServerErrorException("not login")
+    //this.logService.info();
+   // this.logger.log('123');
+   return user;
+  }
+
+  @Get('/all')
+  async find() {
+    const user:User = await this.userService.find();
+    // throw new InternalServerErrorException("not login")
+    //this.logService.info();
+   // this.logger.log('123');
+   return user;
+  }
+
+
+  @Get('/init')
+  async initData() {
+
+    const role:Role = await this.userService.findRoleByName("product");
+    //console.log(role.name);
+    const user:User = await this.userService.findOne("rasonsze@gmail.com");//@gmail.com
+    console.log(user.id)
+    const res = await this.userService.update(user.id, role);
+    console.log(res);
+    return 'res';
+    // throw new InternalServerErrorException("not login")
     //this.logService.info();
    // this.logger.log('123');
   }
+
 
   // @Patch(':id')
   // update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {

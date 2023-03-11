@@ -24,6 +24,7 @@ import {
         res = exception.getResponse()
         status = res.statusCode;
       }else{
+        console.log(exception);
         status = 500;
         res = { msg: "unknown error" }
       }

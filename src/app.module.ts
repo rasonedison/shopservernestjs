@@ -18,6 +18,7 @@ import { LogService } from './Log/custom.log';
     MongooseModule.forRoot(configUtil.getDBConfigUrl(false), {
       useNewUrlParser: true,
       useUnifiedTopology: true,
+      autoCreate: true
     }),
     UserModule,
     AuthorizationModule,

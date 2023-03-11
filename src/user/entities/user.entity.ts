@@ -1,7 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 // import * as bcrypt from 'bcryptjs';
 import * as crypto from 'crypto'; // for md5
+import { Role } from './role.entity';
 
 
 export type UsersDocument = User & Document;
@@ -24,5 +25,8 @@ export class User extends Document {
 
   @Prop({ required: true, default:"application" })
   azureid: string
+
+  @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: 'Role' }])
+  roles: Role[];
 }
 export const UsersSchema = SchemaFactory.createForClass(User);

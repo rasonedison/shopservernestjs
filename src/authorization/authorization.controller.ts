@@ -37,7 +37,7 @@ export class AuthorizationController {
   @Post('azure')
   async callback(@Req() req, @Res({ passthrough: true }) response) {
     const aure_code:string = req.body.code; // get id_token from azure ad
-    const access_token:string = await this.authorizationService.getAzureLoginToken("aure_code");
+    const access_token:string = await this.authorizationService.getAzureLoginToken(aure_code);
     const azure_user:any = await this.authorizationService.getAzureUserInfo(access_token);
     //console.log(azure_user);
     //see if the azure user already in DB, if no, insert a new USER in 
