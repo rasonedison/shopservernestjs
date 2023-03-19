@@ -19,7 +19,7 @@ export class AuthorizationController {
 
   @Post('login')
   @UseInterceptors(IsLoginedInterceptor)
-  async login(@Body() user: CreateUserDto, @Req() request){
+  async login(@Body() user: CreateUserDto, @Req() request,  @Res({ passthrough: true }) response){
     if(request.access_token){
       return {access_token : request.access_token }
     }
@@ -27,7 +27,12 @@ export class AuthorizationController {
       user.username,
       user.password,
     );
-    return this.authorizationService.generateJWT(authenticatedUser);
+    const jwt = await this.authorizationService.generateJWT(authenticatedUser);
+    const jwt_refresh_token = await this.authorizationService.generateRefreshToken(authenticatedUser)
+    response.cookie('jwt_token', jwt.access_token);
+    response.cookie('refresh_token', jwt_refresh_token.refresh_token);
+    const result =  {"accessToken": jwt.access_token, "refreshToken": jwt_refresh_token.refresh_token}
+    return result;
   }
 
   @Get('azurelogin')
@@ -46,8 +51,10 @@ export class AuthorizationController {
       user = await this.userService.create({username: azure_user.mail, password: "azure123",azureid: azure_user.id} as CreateUserDto);
     }
     // generate a application level jwt for cookie
-    const jwt_token = await this.authorizationService.generateJWT(user);
-    response.cookie('jwt_token', jwt_token.access_token);
+    const jwt = await this.authorizationService.generateJWT(user);
+    const jwt_refresh_token = await this.authorizationService.generateRefreshToken(user)
+    response.cookie('jwt_token', jwt.access_token);
+    response.cookie('refresh_token', jwt_refresh_token.refresh_token);
     // const decoded = jwt_decode(jwt_token.access_token);
     // redirect to a success login page and set cookie for react sigle page read
     
@@ -55,7 +62,7 @@ export class AuthorizationController {
         .json({ 
               statusCode: HttpStatus.FOUND,
               message: 'Azure Login Success',
-              data: jwt_token.access_token
+              data: {"accessToken":  jwt.access_token, "refreshToken": jwt_refresh_token.refresh_token }
               });
     }
 

@@ -37,6 +37,18 @@ export class AuthorizationService {
     };
   }
 
+  async generateRefreshToken(user: User):Promise<{[ access_token : string ]: string }> {
+    const payload = { ...user, sub: "shoppy" }; // 这里需要添加role & permisson
+    //console.log(payload);
+    return {
+      refresh_token: this.jwtService.sign(payload, 
+        {
+          "expiresIn": configUtil.getRefreshTokenTimoutConfig(),
+          "secret" : configUtil.getRefreshSecrect()
+        }),
+    };
+  }
+
   async getAzureLoginToken (_code: string): Promise<string> {
     const data = {
       client_id: configUtil.getAzureADConfig('clientID') , 

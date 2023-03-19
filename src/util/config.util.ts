@@ -24,6 +24,10 @@ export class configUtil {
     return config.get("JWT_SECRECT");
   }
 
+  static getRefreshSecrect(){
+    return config.get("REFRESH_SECRECT");
+  }
+
   static getMongoPrintLog(){
     return config.get('DB.log');
   }
@@ -34,6 +38,10 @@ export class configUtil {
 
   static getJWTTimoutConfig():string{
     return config.get('JWT_TIMEOUT');
+  }
+
+  static getRefreshTokenTimoutConfig():string{
+    return config.get('Refresh_Token_TIMEOUT');
   }
 
   static getAzureStrategy():string{

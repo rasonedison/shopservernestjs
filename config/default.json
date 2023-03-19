@@ -1,7 +1,9 @@
 {
     "App" : "First NestJS Application",
     "JWT_SECRECT" : "SHOP_ADMIN",
+    "REFRESH_SECRECT" : "SHOP_ADMIN_REFRESH_SECRECT",
     "JWT_TIMEOUT" : "600s",
+    "Refresh_Token_TIMEOUT" : "3600s",
     "DB" : {
         "name" : "test"
     },
