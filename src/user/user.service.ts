@@ -5,6 +5,7 @@ import { UsersDocument, User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Role, RolesDocument } from './entities/role.entity';
 import { use } from 'passport';
+import { Menu, MenusDocument } from './entities/menu.entity';
 // import { UpdateUserDto } from './dto/update-user.dto';
 // import { UserModule } from './user.module';
 
@@ -13,6 +14,7 @@ export class UserService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UsersDocument>,
     @InjectModel(Role.name) private roleModel: Model<RolesDocument>,
+    @InjectModel(Menu.name) private menuModel: Model<MenusDocument>,
   ) {}
 
   async findOneWithPassword(_username: string, _password: string): Promise<User> {
@@ -20,22 +22,17 @@ export class UserService {
   }
 
   async findOne(_username: string ): Promise<any> {
-
     const user =  await this.userModel.findOne({"username": _username}).exec()
-
     console.log(user);
     return user;
   }
 
   async find(): Promise<any> {
-
     const users =  await this.userModel.find().populate('roles').exec()
-
     console.log(users);
     return users;
   }
-
-
+  
   async create( createUserDto:CreateUserDto ) {
     const createUser = await this.userModel.create(createUserDto);
     return createUser;
@@ -56,6 +53,22 @@ export class UserService {
     const role = await this.roleModel.findOne({"name": _name});
     return role;
   }
+
+  async findMenus(  ): Promise<Menu[]> {
+    const menu:Menu[] = await this.menuModel.find();
+    return menu;
+  }
+
+  async updateRoleWithMenus( id:string, _menus:Menu[] ) {
+    // const updateUser = await this.userModel.updateOne({'username': _username}, {'roles': [{_role}]})
+    const updateRole = await this.roleModel.findOneAndUpdate(
+     { _id: id },
+     { $addToSet: { menus: _menus } },
+     { new: true },
+   );
+     console.log(updateRole);
+     return updateRole;
+   }
 
   // async findAll() {
   //   return await this.userModel.find().exec();

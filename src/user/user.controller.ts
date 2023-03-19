@@ -15,6 +15,7 @@ import { LogService } from 'src/Log/custom.log';
 import { Role, RolesSchema } from './entities/role.entity';
 import { User } from './entities/user.entity';
 import { use } from 'passport';
+import { Menu } from './entities/menu.entity';
 
 @Controller('user')
 export class UserController {
@@ -41,9 +42,6 @@ export class UserController {
   @Get('/all')
   async find() {
     const user:User = await this.userService.find();
-    // throw new InternalServerErrorException("not login")
-    //this.logService.info();
-   // this.logger.log('123');
    return user;
   }
 
@@ -51,13 +49,17 @@ export class UserController {
   @Get('/init')
   async initData() {
 
-    const role:Role = await this.userService.findRoleByName("product");
+    const menus: Menu[] = await this.userService.findMenus();
+
+    const role:Role = await this.userService.findRoleByName("admin");
+    const res = await this.userService.updateRoleWithMenus(role.id, menus);
+
     //console.log(role.name);
-    const user:User = await this.userService.findOne("rasonsze@gmail.com");//@gmail.com
-    console.log(user.id)
-    const res = await this.userService.update(user.id, role);
-    console.log(res);
-    return 'res';
+    // const user:User = await this.userService.findOne("rasonsze@gmail.com");//@gmail.com
+    // console.log(user.id)
+    // const res = await this.userService.update(user.id, role);
+    // console.log(res);
+    return role;
     // throw new InternalServerErrorException("not login")
     //this.logService.info();
    // this.logger.log('123');

@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
+import { Menu } from './menu.entity';
 import { User } from './user.entity';
 
 
@@ -11,8 +12,8 @@ export class Role extends Document {
   @Prop({ required: true, unique:true })
   name: string;
 
-  // @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-  // user: User;
+  @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: 'Menu' }])
+  menus: Menu;
 
 }
 export const RolesSchema = SchemaFactory.createForClass(Role);

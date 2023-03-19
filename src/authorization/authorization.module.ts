@@ -14,6 +14,7 @@ import { IsLoginedInterceptor } from 'src/interceptor/check-login.interceptor';
 import { configUtil } from 'src/util/config.util';
 import { HttpModule } from '@nestjs/axios';
 import { Role, RolesSchema } from 'src/user/entities/role.entity';
+import { Menu, MenusSchema } from 'src/user/entities/menu.entity';
 
 
 @Module({
@@ -29,6 +30,7 @@ import { Role, RolesSchema } from 'src/user/entities/role.entity';
     MongooseModule.forFeature([
       { name: User.name, schema: UsersSchema },
       { name: Role.name, schema: RolesSchema },
+      { name: Menu.name, schema: MenusSchema },
     ]),
   ],
   controllers: [AuthorizationController],
