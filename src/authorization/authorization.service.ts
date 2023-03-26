@@ -1,6 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { use } from 'passport';
 import { lastValueFrom, map } from 'rxjs';
 import { LogService } from 'src/Log/custom.log';
 import { User } from 'src/user/entities/user.entity';
@@ -22,6 +23,8 @@ export class AuthorizationService {
       this.logService.info("login controller:Username or Password is wrong! ")
       throw new UnauthorizedException("Username or Password is wrong!");
     }
+    console.log("user=====");
+    console.log(user);
     // const isPasswordValid = true; // 应该改为先查用户存在，在对比密码
     // if (!isPasswordValid) {
     //   throw new UnauthorizedException();

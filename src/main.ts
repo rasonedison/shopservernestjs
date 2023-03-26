@@ -16,10 +16,11 @@ async function bootstrap() {
       instance
     })
   });
-  await app.listen(80);
+  app.enableCors();
   app.useGlobalPipes(new ValidationPipe());
   app.use(cookieParser());
   app.useGlobalFilters(new AllExceptionsFilter());
-
+  await app.listen(80);
+ 
 }
 bootstrap();

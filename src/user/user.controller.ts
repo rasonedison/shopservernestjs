@@ -3,19 +3,17 @@ import {
   Get,
   Post,
   Body,
-  Patch,
-  Param,
-  Delete,
-  UnauthorizedException,
-  InternalServerErrorException,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LogService } from 'src/Log/custom.log';
-import { Role, RolesSchema } from './entities/role.entity';
+import { Role } from './entities/role.entity';
 import { User } from './entities/user.entity';
-import { use } from 'passport';
 import { Menu } from './entities/menu.entity';
+import { AuthGuard } from '@nestjs/passport';
+import { CustomHttpResponse } from 'src/common/http.response.entity';
+import { GetUser } from 'src/decorators/jwt.auth.get-user.decorator';
 
 @Controller('user')
 export class UserController {
@@ -26,34 +24,31 @@ export class UserController {
     ) {}
 
   @Post('/register')
-  register(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+  register(@Body() createUserDto: CreateUserDto): CustomHttpResponse {
+    return new CustomHttpResponse(this.userService.create(createUserDto));
   }
 
-  @Get()
-  async findOne() {
-    const user:User = await this.userService.findOne("rasonsze@gmail.com");
-    // throw new InternalServerErrorException("not login")
-    //this.logService.info();
-   // this.logger.log('123');
-   return user;
-  }
-
+  @UseGuards(AuthGuard('jwt'))
   @Get('/all')
   async find() {
     const user:User = await this.userService.find();
-   return user;
+   return new CustomHttpResponse(user);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/currentUser')
+  async getCurrentUser(@GetUser() _user: User) {
+    const user:User = await this.userService.findOne(_user.username);
+   return new CustomHttpResponse(user);
   }
 
 
+  //@UseGuards(AuthGuard('jwt'))
   @Get('/init')
   async initData() {
-
     const menus: Menu[] = await this.userService.findMenus();
-
     const role:Role = await this.userService.findRoleByName("admin");
     const res = await this.userService.updateRoleWithMenus(role.id, menus);
-
     //console.log(role.name);
     // const user:User = await this.userService.findOne("rasonsze@gmail.com");//@gmail.com
     // console.log(user.id)
@@ -64,15 +59,4 @@ export class UserController {
     //this.logService.info();
    // this.logger.log('123');
   }
-
-
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-  //   return this.userService.update(+id, updateUserDto);
-  // }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.userService.remove(+id);
-  // }
 }

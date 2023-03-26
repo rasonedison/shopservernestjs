@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Get, Param, UseInterceptors, Req, Res, HttpStatus, HttpException, InternalServerErrorException } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Get, Param, UseInterceptors, Req, Res, HttpStatus, HttpException, InternalServerErrorException, HttpCode } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from 'src/decorators/jwt.auth.get-user.decorator';
 import { IsLoginedInterceptor } from 'src/interceptor/check-login.interceptor';
@@ -8,6 +8,7 @@ import { User } from 'src/user/entities/user.entity';
 import { AuthorizationService } from './authorization.service';
 import { UserService } from 'src/user/user.service';
 import { configUtil } from 'src/util/config.util';
+import { CustomHttpResponse } from 'src/common/http.response.entity';
 
 @Controller('auth')
 export class AuthorizationController {
@@ -18,10 +19,11 @@ export class AuthorizationController {
     ) {}
 
   @Post('login')
+  @HttpCode(200)
   @UseInterceptors(IsLoginedInterceptor)
-  async login(@Body() user: CreateUserDto, @Req() request,  @Res({ passthrough: true }) response){
+  async login(@Body() user: CreateUserDto, @Req() request,  @Res({ passthrough: true }) response): Promise<CustomHttpResponse>{
     if(request.access_token){
-      return {access_token : request.access_token }
+      return new CustomHttpResponse({access_token : request.access_token });
     }
     const authenticatedUser: User = await this.authorizationService.validateUser(
       user.username,
@@ -31,8 +33,12 @@ export class AuthorizationController {
     const jwt_refresh_token = await this.authorizationService.generateRefreshToken(authenticatedUser)
     response.cookie('jwt_token', jwt.access_token);
     response.cookie('refresh_token', jwt_refresh_token.refresh_token);
-    const result =  {"accessToken": jwt.access_token, "refreshToken": jwt_refresh_token.refresh_token}
-    return result;
+    const result =  {
+                    "accessToken": jwt.access_token, 
+                    "refreshToken": jwt_refresh_token.refresh_token,
+                    ...authenticatedUser
+                  }
+    return new CustomHttpResponse(result);
   }
 
   @Get('azurelogin')
@@ -57,29 +63,21 @@ export class AuthorizationController {
     response.cookie('refresh_token', jwt_refresh_token.refresh_token);
     // const decoded = jwt_decode(jwt_token.access_token);
     // redirect to a success login page and set cookie for react sigle page read
-    
-    response.status(200)
-        .json({ 
-              statusCode: HttpStatus.FOUND,
-              message: 'Azure Login Success',
-              data: {"accessToken":  jwt.access_token, "refreshToken": jwt_refresh_token.refresh_token }
-              });
+    response.redirect('http://localhost:3000/azurelogin') 
+    // response.status(200)
+    //     .json({ 
+    //           statusCode: HttpStatus.FOUND,
+    //           message: 'Azure Login Success',
+    //           data: {"accessToken":  jwt.access_token, "refreshToken": jwt_refresh_token.refresh_token }
+    //           });
     }
 
 
   @UseGuards(AuthGuard('jwt'))
   @Get('protected/:name')
-  async protected(@GetUser() user: User, @Param('name') name: string) {
-   // throw new InternalServerErrorException("test");
+  async protected(@GetUser() user: User, @Param('name') name: string):Promise<CustomHttpResponse> {
     this.logService.info('get protect api')
-    return user;
-  }
-
-  @Post('index')
-  async index(@Req() req) {
-    console.log('index');
-    //console.log(req);
-    return {msg: "hello"};
+    return new CustomHttpResponse(user);
   }
 
 }

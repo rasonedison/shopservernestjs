@@ -17,7 +17,7 @@ export class LogService {
   
     info(msg: string){
         const user: User = this.request.user as User;
-        const username = user.username;
+        const username = user? user.username : "anonymous";
         this.logger.log(`${username}: ${msg}`)
     }
 }

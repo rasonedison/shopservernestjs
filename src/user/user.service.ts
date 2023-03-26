@@ -4,10 +4,7 @@ import { Model } from 'mongoose';
 import { UsersDocument, User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Role, RolesDocument } from './entities/role.entity';
-import { use } from 'passport';
 import { Menu, MenusDocument } from './entities/menu.entity';
-// import { UpdateUserDto } from './dto/update-user.dto';
-// import { UserModule } from './user.module';
 
 @Injectable()
 export class UserService {
@@ -18,17 +15,25 @@ export class UserService {
   ) {}
 
   async findOneWithPassword(_username: string, _password: string): Promise<User> {
-    return this.userModel.findOne({ username: _username, password: _password, azureid:"application" }).exec();
+    return this.userModel.findOne({ username: _username, password: _password, azureid:"application" }).populate({
+      path: 'roles',
+      populate: { path: 'menus' }
+    }).exec();
   }
 
   async findOne(_username: string ): Promise<any> {
-    const user =  await this.userModel.findOne({"username": _username}).exec()
-    console.log(user);
+    const user =  await this.userModel.findOne({"username": _username}).populate({
+      path: 'roles',
+      populate: { path: 'menus' }
+    }).exec()
     return user;
   }
 
   async find(): Promise<any> {
-    const users =  await this.userModel.find().populate('roles').exec()
+    const users =  await this.userModel.find().populate({
+      path: 'roles',
+      populate: { path: 'menus' }
+    }).exec()
     console.log(users);
     return users;
   }
@@ -39,13 +44,11 @@ export class UserService {
   }
 
   async update( id:string, _role:Role ) {
-   // const updateUser = await this.userModel.updateOne({'username': _username}, {'roles': [{_role}]})
    const updateUser = await this.userModel.findOneAndUpdate(
     { _id: id },
     { $addToSet: { roles: _role } },
     { new: true },
   );
-    console.log(updateUser);
     return updateUser;
   }
 
@@ -60,7 +63,6 @@ export class UserService {
   }
 
   async updateRoleWithMenus( id:string, _menus:Menu[] ) {
-    // const updateUser = await this.userModel.updateOne({'username': _username}, {'roles': [{_role}]})
     const updateRole = await this.roleModel.findOneAndUpdate(
      { _id: id },
      { $addToSet: { menus: _menus } },
@@ -70,15 +72,4 @@ export class UserService {
      return updateRole;
    }
 
-  // async findAll() {
-  //   return await this.userModel.find().exec();
-  // }
-
-  // update(id: number, updateUserDto: UpdateUserDto) {
-  //   return `This action updates a #${id} user`;
-  // }
-
-  // remove(id: number) {
-  //   return `This action removes a #${id} user`;
-  // }
 }
